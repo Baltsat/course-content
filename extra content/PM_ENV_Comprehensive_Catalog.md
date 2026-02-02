@@ -76,11 +76,18 @@ NMA datasets are IDEAL for pm_env bc:
 - memory overflow on naive loading
 - incorrect spectral feature extraction (Nyquist violations)
 
+**can't game by**:
+- alignment checked vs hidden reference timestamps
+- must process ≥10 days (no cherry-picking easy sessions)
+- throughput measured on standardized hardware
+- artifact detection on held-out recordings
+
 **cross-references**:
 - NMA notebook: `projects/ECoG/exploreAJILE12.ipynb`
 - website template: `website_projects/ECoG/AJILE12/`
 - student project: NMA2022Chaosfan/HMM_SteinmetzDataset (similar pipeline)
 - paper: [Singh et al. 2021](https://doi.org/10.1016/j.jneumeth.2021.109199)
+- paper: [Peterson et al. 2021 (eNeuro)](https://doi.org/10.1523/ENEURO.0007-21.2021)
 
 ---
 
@@ -118,6 +125,12 @@ NMA datasets are IDEAL for pm_env bc:
 - inconsistent unit quality across labs
 - atlas coordinate system confusion (CCF vs IBL)
 - temporal alignment jitter between modalities
+
+**can't game by**:
+- test lab not seen during training
+- ≥5 brain regions required (can't cherry-pick easy ones)
+- can't just use behavioral history (must use neural)
+- cross-session generalization mandatory
 
 **cross-references**:
 - NMA notebook: `projects/neurons/IBL_BWM_Neuromatch_tutorial.ipynb`
@@ -159,6 +172,12 @@ NMA datasets are IDEAL for pm_env bc:
 - incorrect hemodynamic delay modeling
 - feature dimensionality explosion
 - train/test leakage on repeated stimuli
+
+**can't game by**:
+- test stimuli never seen during hyperparameter tuning
+- noise ceiling computed and reported
+- ≥3 ROIs required (V1, V4, IT minimum)
+- repeated-stimulus leakage checked
 
 **cross-references**:
 - NMA notebook: `projects/fMRI/load_algonauts_videos.ipynb`
@@ -202,6 +221,12 @@ NMA datasets are IDEAL for pm_env bc:
 - domain classifier overfits to surface features
 - data leakage from eval into train
 
+**can't game by**:
+- minimum corpus size enforced (can't filter to tiny set)
+- eval set completely held out
+- downstream training is seeded/deterministic
+- diversity metrics tracked
+
 **cross-references**:
 - customer quote: "curate data with a script / embeddings / another model"
 - paper: [Dolma](https://arxiv.org/abs/2402.00159)
@@ -242,6 +267,18 @@ NMA datasets are IDEAL for pm_env bc:
 - incorrect broadcasting/shaping
 - missing edge cases from paper
 
+**can't game by**:
+- adversarial test inputs not in paper
+- similarity check vs reference implementation
+- must pass correctness AND performance thresholds
+
+**concrete papers** (customer requested specificity):
+- Flash Attention 2: [arXiv:2307.08691](https://arxiv.org/abs/2307.08691) → port to JAX/Pallas
+- Speculative Decoding: [arXiv:2302.01318](https://arxiv.org/abs/2302.01318) → implement for Qwen
+- GQA: [arXiv:2305.13245](https://arxiv.org/abs/2305.13245) → add to MaxText
+- RoPE: [arXiv:2104.09864](https://arxiv.org/abs/2104.09864) → implement variants
+- LoRA: [arXiv:2106.09685](https://arxiv.org/abs/2106.09685) → JAX implementation
+
 **cross-references**:
 - customer quote: "add the technique to an existing popular repo"
 - awesome list: mazabou/awesome-neurofm
@@ -281,6 +318,12 @@ NMA datasets are IDEAL for pm_env bc:
 - temporal leakage in train/test split
 - overfitting to specific animal pairs
 - features that don't generalize across sessions
+
+**can't game by**:
+- macro F1 primary metric (not accuracy)
+- test = different animal pairs than train
+- temporal buffer enforced in splits
+- minimum bout count required
 
 **cross-references**:
 - NMA notebook: `projects/behavior_and_theory/Loading_CalMS21_data.ipynb`
@@ -1212,14 +1255,14 @@ NMA datasets are IDEAL for pm_env bc:
 
 ---
 
-## skill coverage matrix (updated with E46-E62)
+## skill coverage matrix (updated with E46-E68)
 
 | skill | environments | primary tier |
 |-------|--------------|--------------|
 | multi-format data wrangling | E01, E02, E07, E27, E46, E48, E50, E52, E55, E56 | 1 |
 | feature engineering | E06, E14, E27, E50, E57 | 1 |
 | ML paper implementation | E03, E05, E24, E46, E47, E49, E52, E54, E56, E61 | 1 |
-| data curation/filtering | E04, E18, E47, E48, E50, E53, E55 | 1 |
+| data curation/filtering | E04, E18, E47, E48, E50, E53, E55, **E66** | 1 |
 | decoding/classification | E11, E23, E36, E37, E38, E46, E51, E53, E60 | 2 |
 | statistical modeling (GLM) | E12, E16, E41, E46 | 2 |
 | dimensionality reduction | E08, E33, E42, E49 | 2 |
@@ -1227,13 +1270,17 @@ NMA datasets are IDEAL for pm_env bc:
 | RNN/LSTM training | E19, E22, E49, E52, E54 | 1-3 |
 | dynamical systems | E20, E21, E46, E59 | 3 |
 | representational analysis | E15, E25, E26 | 2 |
-| optimization/speedup | E28, E29, E30, E31, E32 | 1-2 |
+| optimization/speedup | E28, E29, E30, E31, E32, **E68** | 1-2 |
 | circular statistics | E17 | 3 |
 | BCI/real-time | E38, E39 | 2 |
 | foundation models | E24, E49, E54 | 1 |
 | broken code debugging | E58, E59 | 1 |
 | spectral analysis (LFP) | E57 | 2 |
 | graph neural networks | E52 | 2 |
+| **paper critical analysis** | **E65** | **1** |
+| **knowledge distillation** | **E66** | **1** |
+| **interpretability/attribution** | **E67** | **2** |
+| **LLM inference optimization** | **E68** | **1** |
 
 ---
 
@@ -1259,7 +1306,7 @@ NMA datasets are IDEAL for pm_env bc:
 | requirement | environments affected | notes |
 |-------------|----------------------|-------|
 | CPU-only | all | baseline |
-| TPU v5e (2x2) | E05, E19, E32 | JAX/pjit |
+| TPU v5e (2x2) | E05, E19, E32, **E66, E68** | JAX/pjit |
 | >4GB RAM | E02, E07, E08 | population analysis |
 | >8GB RAM | E08 | 80k neuron PCA |
 | ONE API access | E02, E10 | free registration |
@@ -1268,7 +1315,9 @@ NMA datasets are IDEAL for pm_env bc:
 | scipy.optimize | E10, E13, E16 | parameter fitting |
 | hmmlearn | E09 | HMM fitting |
 | nilearn | E12, E40 | fMRI analysis |
-| JAX + optax | E19, E20, E21, E32 | RNN training |
+| JAX + optax | E19, E20, E21, E32, **E68** | RNN training |
+| AQT library | **E68** | quantization |
+| Qwen models | E04, **E66, E68** | 0.6B-4B inference |
 
 ---
 
@@ -1635,6 +1684,11 @@ NMA datasets are IDEAL for pm_env bc:
 
 **NOTE**: this is a PERFECT "fix the bug" task – student inherits broken code with negative R²
 
+**can't game by**:
+- must explain bug location and cause (not just rewrite from scratch)
+- fix must be minimal (no wholesale reimplementation)
+- R² evaluated on hidden test set
+
 ---
 
 ### E59: hopfield attractor networks
@@ -1655,6 +1709,12 @@ NMA datasets are IDEAL for pm_env bc:
 | E59-T3 | fix storkey rule bug | benchmark match | medium |
 
 **customer alignment**: ★★★★☆ IMPLEMENT PAPERS, ★★★☆☆ HILL-CLIMBING
+
+**can't game by**:
+- test patterns not stored during training
+- noise level standardized (30%)
+- >90% clean recall required
+- spurious attractor detection
 
 ---
 
@@ -1982,17 +2042,21 @@ NMA datasets are IDEAL for pm_env bc:
 | customer quote | mapped environments |
 |----------------|-------------------|
 | "messy input data science – tasks where the agent receives data that's spread across multiple formats" | E01, E02, E06, E27, **E46, E48, E50, E52, E55 (CSHL multi-format), E56 (starling+zf), E57, E62 (fly H1 text), E63 (EEG multi-format), E64 (calcium movies)** |
-| "hill-climbing on core metrics – environments with a single continuous metric" | E03, E08, E11, E23, **E46, E48, E49, E51, E54 (NDT-1 poisson NLL), E58, E60, E61, E63 (ICA optimization), E64 (ROI detection)** |
+| "hill-climbing on core metrics – environments with a single continuous metric" | E03, E08, E11, E23, **E46, E48, E49, E51, E54 (NDT-1 poisson NLL), E58, E60, E61, E63 (ICA optimization), E64 (ROI detection), E67 (probe accuracy, faithfulness)** |
 | "implement ML papers – add the technique to an existing popular repo" | E05, E24, **E46, E47, E49, E52, E54 (Ye & Pandarinath 2021), E55 (Byron Yu GPFA), E56 (LNP models), E61, E62 (I&F models), E63 (MNE tutorials), E64 (Suite2p/CaImAn)** |
-| "data curation – filtering, quality" | E04, E18, **E47, E48, E50, E53, E55, E63 (artifact rejection), E64 (cell classification)** |
-| "hard scientific reasoning comprehension – 10+ pages of dense scientific writing" | E12, E16, E25, **E47, E55 (exercises.pdf), E56 (8 notebooks), E62 (coursework2.pdf)** |
+| "data curation – filtering, quality" | E04, E18, **E47, E48, E50, E53, E55, E63 (artifact rejection), E64 (cell classification), E66 (synthetic data filtering)** |
+| "hard scientific reasoning comprehension – 10+ pages of dense scientific writing" | E12, E16, E25, **E47, E55 (exercises.pdf), E56 (8 notebooks), E62 (coursework2.pdf), E65 (paper analysis)** |
 | "data loading: single-threaded → add multiprocessing, prefetch" | E28 |
 | "preprocessing: row-by-row python loops → vectorized numpy" | E29 |
 | "batching: naive uniform → dynamic batching by sequence length" | E30 |
 | "caching: recomputing embeddings every epoch → cache to disk" | E31 |
 | "parallelism: sequential ops that could be vmap'd or pmap'd" | E32 |
 | "fix the issue and create a NEW commit" / debugging broken code | **E58 (R²=-1.17), E59 (storkey bug)** |
-| "training optimization" | **E49, E54 (transformer tuning)** |
+| "training optimization" | **E49, E54 (transformer tuning), E66 (distillation hyperparams)** |
+| "inference optimization" | **E68 (quantization, KV cache, speculative decoding)** |
+| "evaluate ML papers" | **E65 (flaw detection, methodology critique)** |
+| "train a speculator" | **E68-T3 (speculative decoding)** |
+| "neuron attribution/interp" | **E67 (saliency, probes, ablation)** |
 
 ---
 
@@ -2043,4 +2107,252 @@ these repos failed to clone due to network issues but were fully explored via Gi
 
 ---
 
-*document end | 2026-01-30 | enhanced via GitHub API exploration*
+## part 8: additional environments from FINAL catalog
+
+> 3 environments unique to FINAL catalog, added for completeness
+
+---
+
+### E65: evaluate ML papers (critical analysis) ★★★★★
+
+**customer alignment**: ★★★★★ hard scientific reasoning
+
+**dataset**: modified arxiv papers with planted flaws
+- source: curated paper set with known issues
+- format: PDF + rubric
+- size: N/A (task-based)
+
+**infrastructure**: CPU-only, rubric judge for evaluation
+
+**pm_env opportunity**: reading comprehension + critical analysis
+- identify methodological flaws
+- detect statistical errors
+- spot questionable claims
+- suggest fixes
+
+**task variants**:
+
+| task | description | metric | difficulty |
+|------|-------------|--------|------------|
+| E65-T1 | find statistical issues (p-hacking, wrong tests) | recall | hard |
+| E65-T2 | find methodology flaws (leakage, wrong baseline) | recall | hard |
+| E65-T3 | find missing ablations/baselines | recall | hard |
+| E65-T4 | explain significance of found issues | rubric score | hard |
+| E65-T5 | suggest concrete fixes | quality score | hard |
+
+**failure modes**:
+- false positives (nitpicking valid choices)
+- missing subtle flaws
+- explaining poorly
+- domain knowledge gaps
+
+**can't game by**:
+- papers have known planted flaws + real flaws
+- must explain reasoning (not just list)
+- rubric judge checks explanation quality
+- diverse paper domains
+
+**cross-references**:
+- customer quote: "hard scientific reasoning comprehension – 10+ pages of dense scientific writing"
+- related: ENV-09 in FINAL catalog
+
+---
+
+### E66: knowledge distillation pipeline ★★★★★
+
+**customer alignment**: ★★★★★ data curation + training optimization
+
+**dataset**: teacher-generated synthetic data
+- source: Qwen-4B teacher outputs
+- format: JSONL
+- size: configurable
+
+**infrastructure**: TPU for training, Qwen-4B teacher, Qwen-0.6B student
+
+**pm_env opportunity**: transfer knowledge efficiently
+- generate quality synthetic data from teacher
+- filter for quality
+- optimize distillation hyperparameters
+- balance diversity vs quality
+
+**task variants**:
+
+| task | description | metric | difficulty |
+|------|-------------|--------|------------|
+| E66-T1 | generate distillation data from teacher | quality score | medium |
+| E66-T2 | filter synthetic data for quality | downstream Δ | hard |
+| E66-T3 | optimize temperature parameter | student accuracy | hard |
+| E66-T4 | multi-teacher ensemble distillation | improvement | hard |
+| E66-T5 | measure data efficiency | samples to threshold | hard |
+
+**failure modes**:
+- teacher data quality varies
+- student capacity limits
+- distribution mismatch teacher→student
+- over-distillation → mode collapse
+
+**can't game by**:
+- eval on held-out tasks
+- minimum diversity constraint enforced
+- can't just use teacher directly at inference
+- compute budget enforced
+
+**cross-references**:
+- customer quote: "curate data with a script / embeddings / another model"
+- related: E04 (data curation)
+- related: ENV-10 in FINAL catalog
+
+---
+
+### E67: interpretability / neuron attribution ★★★★☆
+
+**customer alignment**: ★★★★☆ scientific reasoning + debugging
+
+**dataset**: small trained model + probing datasets
+- source: pretrained small model
+- format: model weights + eval data
+- size: ~1GB
+
+**infrastructure**: CPU/TPU for inference, attribution computation
+
+**pm_env opportunity**: understand what neurons represent
+- compute saliency maps
+- train linear probes
+- identify important neurons
+- compare attribution methods
+
+**task variants**:
+
+| task | description | metric | difficulty |
+|------|-------------|--------|------------|
+| E67-T1 | compute saliency maps (gradient-based) | faithfulness (ROAR/KAR) | medium |
+| E67-T2 | train linear probes for concepts | probe accuracy | medium |
+| E67-T3 | compare attribution methods | agreement score | hard |
+| E67-T4 | identify important neurons via ablation | ablation effect | hard |
+| E67-T5 | feature visualization | human interpretability | hard |
+
+**failure modes**:
+- attribution methods disagree significantly
+- probes can memorize instead of generalize
+- interpretability is subjective
+- confirmation bias in analysis
+
+**can't game by**:
+- faithfulness via perturbation (ROAR/KAR)
+- probes evaluated on held-out data
+- human eval for sanity check
+- multiple attribution methods required
+
+**cross-references**:
+- customer quote: "neuron attribution/interp"
+- related: ENV-17 in FINAL catalog
+
+---
+
+### E68: Qwen inference optimization ★★★★★
+
+**customer alignment**: ★★★★★ inference optimization (customer priority)
+
+**what it is**: make Qwen inference faster. student receives slow baseline, must optimize while preserving correctness.
+
+**student does**: implement int8/fp8 quantization, KV cache compression, speculative decoding, continuous batching, pallas kernels.
+
+**dataset**: Qwen model inference
+- source: Qwen 0.6B-4B models
+- format: model weights + test prompts
+- size: model-dependent
+
+**infrastructure**: TPU v5e, JAX, AQT library for quantization
+
+**pm_env opportunity**: real-world LLM inference optimization
+- tokens/second improvement
+- memory reduction
+- latency percentiles
+- correctness preservation
+
+**we measure**:
+- tokens/second improvement
+- memory reduction
+- latency percentiles (p50, p95, p99)
+- output divergence (must be < threshold)
+
+**task variants**:
+
+| task | description | metric | difficulty |
+|------|-------------|--------|------------|
+| E68-T1 | implement int8 quantization | speedup + divergence | hard |
+| E68-T2 | KV cache compression | memory Δ + quality | hard |
+| E68-T3 | speculative decoding | acceptance rate + speedup | hard |
+| E68-T4 | continuous batching | throughput | hard |
+| E68-T5 | pallas kernel for attention | TPU utilization | hard |
+| E68-T6 | attention chunking for long seqs | memory reduction | medium |
+
+**failure modes**:
+- quantization introduces unacceptable errors
+- KV cache compression loses critical info
+- speculative decode acceptance varies wildly
+- variable sequence lengths cause edge cases
+- pallas kernel debugging is painful
+
+**can't game by**:
+- correctness on hidden test prompts
+- divergence threshold strictly enforced
+- diverse input distribution (short/long, different domains)
+- standardized hardware for benchmarking
+
+**cross-references**:
+- customer quote: "inference optimization"
+- related: ENV-07 in FINAL catalog
+- related: E05 (paper implementation has some overlap)
+
+---
+
+## appendix F: what makes a GOOD pm_env task
+
+per customer requirements + pm_env documentation:
+
+| criterion | description | example |
+|-----------|-------------|---------|
+| **no memorizable pattern** | reasoning required, not recall | can't lookup answer |
+| **multiple failure points** | different students fail differently | data + model + eval bugs |
+| **continuous reward** | not binary pass/fail where possible | R², AUC, speedup factor |
+| **open-ended improvement** | can always do better (like ELO) | no ceiling effect |
+| **real data** | avoid purely synthetic | actual neural recordings |
+| **can't game** | reward hacking prevention built-in | hidden test, cross-session |
+| **diverse solutions** | multiple valid approaches exist | no single "correct" answer |
+| **validates against reality** | theory envs need real data comparison | attractors vs HD cells |
+
+### anti-patterns to avoid:
+
+1. **trivial baselines** — if random/majority gets >50%, task too easy
+2. **single failure mode** — all students fail same way = memorizable
+3. **binary metrics** — pass/fail hides partial progress
+4. **synthetic-only** — doesn't transfer to real problems
+5. **gameable reward** — can inflate metric without solving task
+6. **ceiling effect** — optimal solution too easy to find
+
+### good task structure:
+
+```
+student receives:  data + code template + metric definition
+student produces:  modified code + predictions
+we measure:        metric on hidden test + explanation quality
+can't game by:     held-out test, cross-validation, diversity requirements
+```
+
+---
+
+## updated summary statistics
+
+| category | original envs | added from FINAL | total |
+|----------|--------------|------------------|-------|
+| tier 1 (★★★★★) | 19 | 3 (E65, E66, E68) | 22 |
+| tier 2 (★★★★☆) | 17 | 1 (E67) | 18 |
+| tier 3 (★★★☆☆) | 11 | 0 | 11 |
+| optimization/tools | 5 | 0 | 5 |
+| preprocessing (E63-64) | 2 | 0 | 2 |
+| **TOTAL** | 64 | 4 | **68** |
+
+---
+
+*document end | 2026-02-02 | merged with FINAL catalog: E65-E68, appendix F, "can't game by" sections, paper links*
