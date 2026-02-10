@@ -11,12 +11,12 @@ this catalog identifies **62 unique pm_env environments** with **250+ task varia
 
 > **update 2026-01-30**: added 17 new environments (E46-E62) from systematic repo evaluation
 
-### customer priority matrix (updated with E46-E62)
+### customer priority matrix (updated with E46-E69)
 
 | priority | category | env count | task variants |
 |----------|----------|-----------|---------------|
 | ★★★★★ | messy input data science | 14 | 84 |
-| ★★★★★ | implement ML papers | 10 | 58 |
+| ★★★★★ | implement ML papers | 11 | 62 |
 | ★★★★★ | data curation | 5 | 32 |
 | ★★★★☆ | hill-climbing core metrics | 12 | 68 |
 | ★★★★☆ | hard scientific reasoning | 8 | 42 |
@@ -1281,6 +1281,7 @@ NMA datasets are IDEAL for pm_env bc:
 | **knowledge distillation** | **E66** | **1** |
 | **interpretability/attribution** | **E67** | **2** |
 | **LLM inference optimization** | **E68** | **1** |
+| **spiking neural networks** | **E69** | **1** |
 
 ---
 
@@ -2307,6 +2308,61 @@ these repos failed to clone due to network issues but were fully explored via Gi
 
 ---
 
+### E69: spiking neural network classification ★★★★★
+
+**customer alignment**: ★★★★★ implement ML papers + biologically plausible neural networks
+
+**what it is**: train spiking neural networks (SNNs) on temporal audio data. SNNs are "third generation" networks that communicate via discrete spikes rather than continuous activations.
+
+**dataset**: SHD (Spiking Heidelberg Digits) – 20-class spoken digit classification
+- source: [Zenodo](https://zenodo.org/record/4319560)
+- format: sparse spike trains (700 cochlea channels)
+- size: 8.3k train, 2k test samples
+
+**why SNNs for pm_env**:
+- truly temporal task where SNNs outperform RNN/LSTM
+- biologically plausible (LIF neurons, surrogate gradients)
+- energy efficiency metrics (synaptic operations)
+- JAX-native framework (Spyx) works on TPU
+
+**student does**: implement LIF neuron dynamics, train SNN with surrogate gradients, compare to RNN baseline, optimize for accuracy and energy efficiency.
+
+**we measure**:
+- test accuracy on SHD (baseline 72%, SOTA 85%)
+- synaptic operations (energy proxy)
+- temporal usage (shuffling check)
+
+**task variants**:
+
+| task | description | metric | difficulty |
+|------|-------------|--------|------------|
+| E69-T1 | implement LIF neuron from scratch | unit tests pass | easy |
+| E69-T2 | train SNN on SHD dataset | test accuracy ≥70% | medium |
+| E69-T3 | prove SNN beats RNN on temporal task | accuracy gap >0% | hard |
+| E69-T4 | convert trained ANN to SNN | accuracy retention >90% at T=16 | hard |
+
+**failure modes**:
+- ignoring temporal structure (just using spike counts)
+- always-spiking trivial solution
+- surrogate gradient numerical instability
+- overfitting to training speakers
+
+**can't game by**:
+- temporal shuffling check (acc must drop when time shuffled)
+- spike sparsity check (rate < 50%)
+- held-out speakers in test set
+- minimum timesteps required
+
+**infrastructure**: CPU/TPU, JAX + Spyx framework
+
+**cross-references**:
+- framework: [Spyx](https://github.com/kmheckel/spyx)
+- dataset: [SHD paper](https://arxiv.org/abs/1910.07407)
+- tutorial: [snnTorch tutorials](https://snntorch.readthedocs.io/)
+- NMA: W2D3 LIF neuron tutorial
+
+---
+
 ## appendix F: what makes a GOOD pm_env task
 
 per customer requirements + pm_env documentation:
@@ -2346,13 +2402,13 @@ can't game by:     held-out test, cross-validation, diversity requirements
 
 | category | original envs | added from FINAL | total |
 |----------|--------------|------------------|-------|
-| tier 1 (★★★★★) | 19 | 3 (E65, E66, E68) | 22 |
+| tier 1 (★★★★★) | 19 | 4 (E65, E66, E68, E69) | 23 |
 | tier 2 (★★★★☆) | 17 | 1 (E67) | 18 |
 | tier 3 (★★★☆☆) | 11 | 0 | 11 |
 | optimization/tools | 5 | 0 | 5 |
 | preprocessing (E63-64) | 2 | 0 | 2 |
-| **TOTAL** | 64 | 4 | **68** |
+| **TOTAL** | 64 | 5 | **69** |
 
 ---
 
-*document end | 2026-02-02 | merged with FINAL catalog: E65-E68, appendix F, "can't game by" sections, paper links*
+*document end | 2026-02-02 | merged with FINAL catalog: E65-E69, appendix F, "can't game by" sections, paper links*
